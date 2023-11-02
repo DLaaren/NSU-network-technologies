@@ -20,5 +20,5 @@ repositories {
 }
 
 application {
-    mainClass.set("main.java.ru.nsu.fit.vinter.lab2.TCP.Main")
+    mainClass.set("main.java.ru.nsu.fit.vinter.lab2.TCP")
 }

@@ -1,7 +1,7 @@
 package main.java.ru.nsu.fit.vinter.lab2.TCP.Client;
 
-import main.java.ru.nsu.fit.vinter.lab2.TCP.exceptions.FileDoesNotExistException;
-import main.java.ru.nsu.fit.vinter.lab2.TCP.exceptions.WrongArgumentsException;
+import main.java.ru.nsu.fit.vinter.lab2.TCP.Exceptions.FileDoesNotExistException;
+import main.java.ru.nsu.fit.vinter.lab2.TCP.Exceptions.WrongArgumentsException;
 
 import java.io.IOException;
 import java.net.*;

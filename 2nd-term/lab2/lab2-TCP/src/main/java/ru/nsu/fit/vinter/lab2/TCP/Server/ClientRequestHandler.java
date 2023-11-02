@@ -1,8 +1,8 @@
 package main.java.ru.nsu.fit.vinter.lab2.TCP.Server;
 
-import main.java.ru.nsu.fit.vinter.lab2.TCP.exceptions.FileNameExcessException;
-import main.java.ru.nsu.fit.vinter.lab2.TCP.exceptions.FileSizeExcessException;
-import main.java.ru.nsu.fit.vinter.lab2.TCP.exceptions.UnknownProtocol;
+import main.java.ru.nsu.fit.vinter.lab2.TCP.Exceptions.FileNameExcessException;
+import main.java.ru.nsu.fit.vinter.lab2.TCP.Exceptions.FileSizeExcessException;
+import main.java.ru.nsu.fit.vinter.lab2.TCP.Exceptions.UnknownProtocol;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

@@ -1,6 +1,6 @@
 package main.java.ru.nsu.fit.vinter.lab2.TCP.Server;
 
-import main.java.ru.nsu.fit.vinter.lab2.TCP.exceptions.UnknownResponseCode;
+import main.java.ru.nsu.fit.vinter.lab2.TCP.Exceptions.UnknownResponseCode;
 
 public enum ResponseCode {
     SUCCESS_HEADER_TRANSFER(201),

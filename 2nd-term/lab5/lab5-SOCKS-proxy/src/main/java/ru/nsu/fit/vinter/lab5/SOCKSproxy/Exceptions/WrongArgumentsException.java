@@ -1,7 +1,7 @@
-package main.java.ru.nsu.fit.vinter.lab2.TCP.exceptions;
+package main.java.ru.nsu.fit.vinter.lab5.SOCKSproxy.Exceptions;
 
 public class WrongArgumentsException extends Exception{
     public WrongArgumentsException(String message){
-            super(message);
-        }
+        super(message);
+    }
 }

@@ -8,8 +8,8 @@ package main.java.ru.nsu.fit.vinter.lab2.TCP.Client;
 // show if the data transmission was successful
 
 import main.java.ru.nsu.fit.vinter.lab2.TCP.Server.ResponseCode;
-import main.java.ru.nsu.fit.vinter.lab2.TCP.exceptions.FileDoesNotExistException;
-import main.java.ru.nsu.fit.vinter.lab2.TCP.exceptions.UnknownResponseCode;
+import main.java.ru.nsu.fit.vinter.lab2.TCP.Exceptions.FileDoesNotExistException;
+import main.java.ru.nsu.fit.vinter.lab2.TCP.Exceptions.UnknownResponseCode;
 
 import java.io.*;
 import java.net.*;
