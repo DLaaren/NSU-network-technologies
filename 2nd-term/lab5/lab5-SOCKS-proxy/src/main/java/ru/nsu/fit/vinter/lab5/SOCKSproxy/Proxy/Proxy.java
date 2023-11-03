@@ -44,7 +44,7 @@ public class Proxy implements Closeable {
             serverSocketChannel.bind(socket);
             selector = Selector.open();
             serverSocketChannel.configureBlocking(false);
-            serverSocketChannel.register(selector, serverSocketChannel.validOps(), new AcceptHandler(serverSocketChannel));
+            serverSocketChannel.register(selector, ??);
 
         } catch (UnknownHostException e) {
             logger.log(Level.SEVERE, "Error while getting socket port number");
@@ -77,28 +77,7 @@ public class Proxy implements Closeable {
     }
 
     private void handleKeyAttachment(Object attachmentObj) throws UnknownAttachmentType {
-        if (!(attachmentObj instanceof Attachment)) {
-            logger.log(Level.SEVERE, "Argument in handleKey in not an Attachment");
-            throw new UnknownAttachmentType("Not an instance of Attachment");
-        }
-        Attachment attachment = (Attachment) attachmentObj;
-        switch (attachment.getType()) {
-            case ACCEPT_HANDLER:
-                handleAttachment((AcceptHandler) attachment);
-                break;
-//            case DNS_RESOLVER:
-//                handleAttachment((DNSResolver) attachment);
-//                break;
-            case CLIENT_HANDLER:
-                handleAttachment((ClientHandler) attachment);
-                break;
-            case SERVER_HANDLER:
-                handleAttachment((ServerHandler) attachment);
-                break;
-            default:
-                logger.log(Level.SEVERE, "Unknown attachment type: " + attachment.getType());
-                throw new UnknownAttachmentType("Unknown attachment type in switch");
-        }
+
     }
 
     private void handleAttachment(AcceptHandler acceptHandler) {

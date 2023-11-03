@@ -39,13 +39,13 @@ public class ClientRequestHandler implements Runnable{
 
             // reading the header
             String protocolName = clientReader.readUTF();
-            if (protocolName.equals("FTP")) {
+            if (!protocolName.equals("FTP")) {
                 throw new UnknownProtocol("Got unknown protocol name");
             }
             String fileName = clientReader.readUTF();
             long fileSize = clientReader.readLong();
-            if (fileName.contains("/..")) {
-                throw new SecurityException("File name contains \"/..\"");
+            if (fileName.contains("../") || fileName.equals("..")) {
+                throw new SecurityException("File name contains \"../\" or \"..\"");
             }
             if (fileName.length() > MAX_FILENAME_LENGTH) {
                 throw new FileNameExcessException("Got file name greater than MAX_FILENAME_SIZE");
@@ -110,7 +110,7 @@ public class ClientRequestHandler implements Runnable{
         } catch (UnknownProtocol unknownProtocol) {
             logger.log(Level.SEVERE, "Got unknown protocol name from the server");
         } catch (SecurityException securityException) {
-            logger.log(Level.SEVERE, "Got filename with \"/..\"");
+            logger.log(Level.SEVERE, "Got filename with \"../\" or \"..\"");
         } catch (FileNameExcessException fileNameExcessException) {
             logger.log(Level.SEVERE, "Got file name greater than MAX_FILENAME_SIZE");
         } catch (FileSizeExcessException fileSizeExcessException) {

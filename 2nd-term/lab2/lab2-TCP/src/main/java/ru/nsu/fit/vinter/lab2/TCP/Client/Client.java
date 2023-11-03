@@ -49,7 +49,7 @@ public class Client implements Runnable {
             DataInputStream socketReader = new DataInputStream(socket.getInputStream());
 
             // defining FTP header
-            String protocolName = "customFTP";
+            String protocolName = "FTP";
             String fileName = this.filePath.getFileName().toString();
             long fileSize = Files.size(this.filePath);
 
