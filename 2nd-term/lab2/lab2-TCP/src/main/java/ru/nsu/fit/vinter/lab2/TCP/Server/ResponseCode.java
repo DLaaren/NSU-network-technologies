@@ -1,6 +1,6 @@
 package main.java.ru.nsu.fit.vinter.lab2.TCP.Server;
 
-import main.java.ru.nsu.fit.vinter.lab2.TCP.Exceptions.UnknownResponseCode;
+import main.java.ru.nsu.fit.vinter.lab2.TCP.Exceptions.UnknownResponseCodeException;
 
 public enum ResponseCode {
     SUCCESS_HEADER_TRANSFER(201),
@@ -18,12 +18,12 @@ public enum ResponseCode {
         return code;
     }
 
-    public static ResponseCode getResponseByCode(int code) throws UnknownResponseCode {
+    public static ResponseCode getResponseByCode(int code) throws UnknownResponseCodeException {
         for (ResponseCode responseCode: ResponseCode.values()){
             if (responseCode.code == code){
                 return responseCode;
             }
         }
-        throw new UnknownResponseCode("No response code = " + code);
+        throw new UnknownResponseCodeException("No response code = " + code);
     }
 }

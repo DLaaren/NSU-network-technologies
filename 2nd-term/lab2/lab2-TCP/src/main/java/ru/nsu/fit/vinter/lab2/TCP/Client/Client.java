@@ -9,7 +9,7 @@ package main.java.ru.nsu.fit.vinter.lab2.TCP.Client;
 
 import main.java.ru.nsu.fit.vinter.lab2.TCP.Server.ResponseCode;
 import main.java.ru.nsu.fit.vinter.lab2.TCP.Exceptions.FileDoesNotExistException;
-import main.java.ru.nsu.fit.vinter.lab2.TCP.Exceptions.UnknownResponseCode;
+import main.java.ru.nsu.fit.vinter.lab2.TCP.Exceptions.UnknownResponseCodeException;
 
 import java.io.*;
 import java.net.*;
@@ -87,7 +87,7 @@ public class Client implements Runnable {
 
         } catch (IOException | NoSuchAlgorithmException e) {
             e.printStackTrace();
-        } catch (UnknownResponseCode unknownResponseCode) {
+        } catch (UnknownResponseCodeException unknownResponseCodeException) {
             logger.log(Level.SEVERE, "Get unknown response code from the server");
         }
     }

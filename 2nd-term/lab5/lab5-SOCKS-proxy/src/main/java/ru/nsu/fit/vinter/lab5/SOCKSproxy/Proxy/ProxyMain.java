@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 public class ProxyMain {
 
     private static final Logger logger = Logger.getLogger(ProxyMain.class.getName());
-    public static void main(String[] args) throws WrongArgumentsException, IOException {
+    public static void main(String[] args) throws Exception {
         if (args.length != 1) {
             throw new WrongArgumentsException("Expected arguments: port");
         }

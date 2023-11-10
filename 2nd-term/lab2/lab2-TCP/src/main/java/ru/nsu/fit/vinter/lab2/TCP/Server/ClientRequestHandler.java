@@ -2,7 +2,7 @@ package main.java.ru.nsu.fit.vinter.lab2.TCP.Server;
 
 import main.java.ru.nsu.fit.vinter.lab2.TCP.Exceptions.FileNameExcessException;
 import main.java.ru.nsu.fit.vinter.lab2.TCP.Exceptions.FileSizeExcessException;
-import main.java.ru.nsu.fit.vinter.lab2.TCP.Exceptions.UnknownProtocol;
+import main.java.ru.nsu.fit.vinter.lab2.TCP.Exceptions.UnknownProtocolException;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -40,7 +40,7 @@ public class ClientRequestHandler implements Runnable{
             // reading the header
             String protocolName = clientReader.readUTF();
             if (!protocolName.equals("FTP")) {
-                throw new UnknownProtocol("Got unknown protocol name");
+                throw new UnknownProtocolException("Got unknown protocol name");
             }
             String fileName = clientReader.readUTF();
             long fileSize = clientReader.readLong();
@@ -107,7 +107,7 @@ public class ClientRequestHandler implements Runnable{
             }
         } catch (IOException | NoSuchAlgorithmException e) {
             e.printStackTrace();
-        } catch (UnknownProtocol unknownProtocol) {
+        } catch (UnknownProtocolException unknownProtocolException) {
             logger.log(Level.SEVERE, "Got unknown protocol name from the server");
         } catch (SecurityException securityException) {
             logger.log(Level.SEVERE, "Got filename with \"../\" or \"..\"");
