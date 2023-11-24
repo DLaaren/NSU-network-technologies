@@ -4,3 +4,15 @@
  * This is a general purpose Gradle build.
  * To learn more about Gradle by exploring our Samples at https://docs.gradle.org/8.3/samples
  */
+
+plugins {
+    application
+}
+
+repositories {
+    mavenCentral()
+}
+
+application {
+    mainClass.set("ru.nsu.fit.vinter.lab5.SOCKSproxy.Proxy.ProxyMain")
+}

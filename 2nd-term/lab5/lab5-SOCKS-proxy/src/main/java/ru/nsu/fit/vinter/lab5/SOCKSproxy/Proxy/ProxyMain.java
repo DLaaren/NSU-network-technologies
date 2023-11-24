@@ -1,6 +1,6 @@
-package main.java.ru.nsu.fit.vinter.lab5.SOCKSproxy.Proxy;
+package ru.nsu.fit.vinter.lab5.SOCKSproxy.Proxy;
 
-import main.java.ru.nsu.fit.vinter.lab5.SOCKSproxy.Exceptions.WrongArgumentsException;
+import ru.nsu.fit.vinter.lab5.SOCKSproxy.Exceptions.WrongArgumentsException;
 
 import java.io.IOException;
 import java.util.logging.Logger;
