@@ -6,6 +6,4 @@ public record GraphHopperResponse (
         @JsonProperty("message") String message,
         @JsonProperty("hits") GeocodingLocation[] hits,
         @JsonProperty("took") long took
-) {
-
-}
+) {}

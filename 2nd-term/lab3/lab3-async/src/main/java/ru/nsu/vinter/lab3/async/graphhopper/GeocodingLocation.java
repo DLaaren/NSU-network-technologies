@@ -16,45 +16,4 @@ public record GeocodingLocation (
         @JsonProperty("street") String street,
         @JsonProperty("housenumber") String housenumber,
         @JsonProperty("postcode") String postcode
-) {
-
-    @Override
-    public String name() {
-        return name;
-    }
-
-    @Override
-    public String country() {
-        return country;
-    }
-
-    @Override
-    public String city() {
-        return city;
-    }
-
-    @Override
-    public String state() {
-        return state;
-    }
-
-    @Override
-    public String street() {
-        return street;
-    }
-
-    @Override
-    public String housenumber() {
-        return housenumber;
-    }
-
-    @Override
-    public String postcode() {
-        return postcode;
-    }
-
-    @Override
-    public GeocodingPoint geocodingPoint() {
-        return geocodingPoint;
-    }
-}
+) {}

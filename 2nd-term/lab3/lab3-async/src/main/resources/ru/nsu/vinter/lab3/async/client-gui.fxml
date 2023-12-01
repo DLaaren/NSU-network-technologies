@@ -54,19 +54,22 @@
                         <Font size="30.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="userSearchField" layoutX="93.0" layoutY="118.0" prefHeight="44.0" prefWidth="653.0" />
+                  <TextField fx:id="userSearchField" layoutX="93.0" layoutY="118.0" prefHeight="44.0" prefWidth="653.0">
+                     <font>
+                        <Font size="20.0" />
+                     </font></TextField>
                   <Button fx:id="findLocationButton" layoutX="791.0" layoutY="119.0" mnemonicParsing="false" onMouseClicked="#findLocationButtonPressed" prefHeight="0.0" prefWidth="137.0" text="Find">
                      <font>
                         <Font size="20.0" />
                      </font></Button>
-                  <ScrollPane layoutX="73.0" layoutY="198.0" prefHeight="521.0" prefWidth="1054.0">
-                    <content>
-                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="515.0" prefWidth="1051.0">
+                  <ScrollPane layoutX="83.0" layoutY="208.0" prefHeight="521.0" prefWidth="1054.0">
+                     <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="515.0" prefWidth="1051.0">
                            <children>
                               <VBox fx:id="placesList" prefHeight="513.0" prefWidth="1051.0" />
                            </children>
                         </AnchorPane>
-                    </content>
+                     </content>
                   </ScrollPane>
                </children>
             </AnchorPane>
@@ -192,12 +195,30 @@
     </Tab>
     <Tab text="Interesting Places">
       <content>
-        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+               <children>
+                  <ScrollPane layoutX="52.0" layoutY="51.0" prefHeight="667.0" prefWidth="1097.0">
+                    <content>
+                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="515.0" prefWidth="1051.0">
+                           <children>
+                              <VBox fx:id="interestingPlacesList" prefHeight="662.0" prefWidth="1095.0" />
+                           </children>
+                        </AnchorPane>
+                    </content>
+                  </ScrollPane>
+               </children></AnchorPane>
       </content>
     </Tab>
       <Tab text="Description">
         <content>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+               <children>
+                  <ScrollPane fx:id="placeDescriptionText" layoutX="42.0" layoutY="41.0" prefHeight="687.0" prefWidth="1117.0">
+                    <content>
+                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="659.0" prefWidth="1109.0" />
+                    </content>
+                  </ScrollPane>
+               </children></AnchorPane>
         </content>
       </Tab>
   </tabs>

@@ -11,5 +11,6 @@ module ru.nsu.vinter.lab3.async {
     exports ru.nsu.vinter.lab3.async;
     exports ru.nsu.vinter.lab3.async.graphhopper;
     exports ru.nsu.vinter.lab3.async.openweather;
+    exports ru.nsu.vinter.lab3.async.opentripmap;
     opens ru.nsu.vinter.lab3.async.graphhopper to javafx.fxml;
 }
