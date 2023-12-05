@@ -84,159 +84,146 @@ public class Proxy implements Runnable {
     }
 
     public void run() {
-        try {
-            while (selector.select() > -1) {
-                Iterator<SelectionKey> selectedKeys = selector.selectedKeys().iterator();
-                while (selectedKeys.hasNext()) {
-                    SelectionKey key = selectedKeys.next();
-                    selectedKeys.remove();
-                    if (!key.isValid()) {
-                        continue;
-                    }
-
-                    if (key.isAcceptable()) {
-                        SocketChannel newChannel = ((ServerSocketChannel)key.channel()).accept();
-                        newChannel.configureBlocking(false);
-                        newChannel.register(key.selector(), SelectionKey.OP_READ);
-                        logger.info("Get connection request");
-                    }
-
-                    else if (key.isReadable()) {
-                        SocketChannel channel = ((SocketChannel) key.channel());
-                        ConnectionContext connectionContext = ((ConnectionContext) key.attachment());
-
-                        if (connectionContext == null) {
-                            key.attach(connectionContext = new ConnectionContext());
-                            connectionContext.in = ByteBuffer.allocate(BUFFER_SIZE);
-                            connectionContext.out = ByteBuffer.allocate(BUFFER_SIZE);
-                            connectionContext.state = State.GREETING;
+        while (true) {
+            SelectionKey key = null;
+            try {
+                while (selector.select() > -1) {
+                    Iterator<SelectionKey> selectedKeys = selector.selectedKeys().iterator();
+                    while (selectedKeys.hasNext()) {
+                        key = selectedKeys.next();
+                        selectedKeys.remove();
+                        if (!key.isValid()) {
+                            continue;
                         }
 
-                        logger.info("trying to read");
-                        connectionContext.in.clear();
-                        int bytesRead = channel.read(connectionContext.in);
-                        if (bytesRead == -1) {
-                            channel.shutdownInput();
-                            channel.register(selector, key.interestOps() & ~SelectionKey.OP_READ, connectionContext);
+                        if (key.isAcceptable()) {
+                            SocketChannel newChannel = ((ServerSocketChannel) key.channel()).accept();
+                            newChannel.configureBlocking(false);
+                            newChannel.register(key.selector(), SelectionKey.OP_READ);
+                            logger.info("Get connection request");
+                        } else if (key.isReadable()) {
+                            SocketChannel channel = ((SocketChannel) key.channel());
+                            ConnectionContext connectionContext = ((ConnectionContext) key.attachment());
 
-                            if (connectionContext.peer != null) {
-                                SocketChannel peerChannel = (SocketChannel) connectionContext.peer.channel();
-                                peerChannel.shutdownOutput();
-                                peerChannel.register(selector, peerChannel.keyFor(selector).interestOps() & ~SelectionKey.OP_WRITE, connectionContext.peer.attachment());
-
-                                logger.info("Error while reading shutting down sender input and receiver output");
-                            }
-                        }
-
-                        //logger.info("read :: " + bytesRead + " " +Arrays.toString(connectionContext.in.array()));
-
-                        else if (connectionContext.state == State.GREETING) {
-                            logger.info("Start reading greeting message");
-                            processGreetingMessage(key, connectionContext);
-                        } else if (connectionContext.state == State.CONNECTION) {
-                            logger.info("Start reading connection message");
-                            processConnectionMessage(key, connectionContext);
-                        } else if (connectionContext.state == State.CONNECTED) {
-                            key.interestOps(key.interestOps() ^ SelectionKey.OP_READ);
-                            connectionContext.peer.interestOps(connectionContext.peer.interestOps() | SelectionKey.OP_WRITE);
-                        }
-//                        connectionContext.in.flip();
-                    }
-
-                    else if (key.isWritable()) {
-                        SocketChannel channel = ((SocketChannel) key.channel());
-                        ConnectionContext connectionContext = ((ConnectionContext) key.attachment());
-
-                        connectionContext.out.flip();
-
-                        int bytesWritten = channel.write(connectionContext.out);
-                        if (bytesWritten == -1) {
-                            closeKey(key);
-                            logger.log(Level.WARNING, "Error while writing - closing the connection");
-                        }
-                        logger.info("writing :: " + bytesWritten + " " + Arrays.toString(connectionContext.out.array()));
-                        if (connectionContext.out.remaining() == 0) {
-                            if (connectionContext.state == State.GREETING) {
-                                logger.info("The greeting was send back now we are in state 'CONNECTION'");
-                                connectionContext.state = State.CONNECTION;
-                                //logger.info("The greeting was replied :: " + Arrays.toString(connectionContext.out.array()));
-                                key.interestOps(key.interestOps() | SelectionKey.OP_READ);
+                            if (connectionContext == null) {
+                                key.attach(connectionContext = new ConnectionContext());
+                                connectionContext.in = ByteBuffer.allocate(BUFFER_SIZE);
+                                connectionContext.out = ByteBuffer.allocate(BUFFER_SIZE);
+                                connectionContext.state = State.GREETING;
                             }
 
-                            key.interestOps(key.interestOps() ^ SelectionKey.OP_WRITE);
-                            if (connectionContext.state == State.CONNECTED && connectionContext.peer != null)
-                                connectionContext.peer.interestOps(connectionContext.peer.interestOps() | SelectionKey.OP_READ);
+                            connectionContext.in.clear();
+                            int bytesRead = channel.read(connectionContext.in);
+                            if (bytesRead == -1) {
+                                channel.shutdownInput();
+                                channel.register(selector, key.interestOps() & ~SelectionKey.OP_READ, connectionContext);
+
+                                if (connectionContext.peer != null) {
+                                    SocketChannel peerChannel = (SocketChannel) connectionContext.peer.channel();
+                                    peerChannel.shutdownOutput();
+                                    peerChannel.register(selector, peerChannel.keyFor(selector).interestOps() & ~SelectionKey.OP_WRITE, connectionContext.peer.attachment());
+
+                                    logger.info("Error while reading shutting down sender input and receiver output");
+                                }
+                            } else if (connectionContext.state == State.GREETING) {
+                                logger.info("Start reading greeting message");
+                                processGreetingMessage(key, connectionContext);
+                            } else if (connectionContext.state == State.CONNECTION) {
+                                logger.info("Start reading connection message");
+                                processConnectionMessage(key, connectionContext);
+                            } else if (connectionContext.state == State.CONNECTED) {
+                                key.interestOps(key.interestOps() ^ SelectionKey.OP_READ);
+                                connectionContext.peer.interestOps(connectionContext.peer.interestOps() | SelectionKey.OP_WRITE);
+                            }
+                        } else if (key.isWritable()) {
+                            SocketChannel channel = ((SocketChannel) key.channel());
+                            ConnectionContext connectionContext = ((ConnectionContext) key.attachment());
+
+                            connectionContext.out.flip();
+
+                            int bytesWritten = channel.write(connectionContext.out);
+                            if (bytesWritten == -1) {
+                                closeKey(key);
+                                logger.log(Level.WARNING, "Error while writing - closing the connection");
+                            }
+                            if (connectionContext.out.remaining() == 0) {
+                                if (connectionContext.state == State.GREETING) {
+                                    connectionContext.state = State.CONNECTION;
+                                    key.interestOps(key.interestOps() | SelectionKey.OP_READ);
+                                }
+
+                                key.interestOps(key.interestOps() ^ SelectionKey.OP_WRITE);
+                                if (connectionContext.state == State.CONNECTED && connectionContext.peer != null)
+                                    connectionContext.peer.interestOps(connectionContext.peer.interestOps() | SelectionKey.OP_READ);
+                            }
+                        } else if (key.isConnectable()) {
+                            logger.info("Trying to connect");
+                            SocketChannel channel = ((SocketChannel) key.channel());
+                            ConnectionContext connectionContext = ((ConnectionContext) key.attachment());
+
+                            if (!channel.finishConnect()) {
+                                throw new FailedConnectionException("Error at 'finishConnect'");
+                            }
+
+                            int addressType = connectionContext.addressType;
+                            byte[] address;
+                            if (addressType == AddressType.DomainName.getAddressType()) {
+                                ByteBuffer tmp = ByteBuffer.allocate(connectionContext.domainNameLength + 1);
+                                tmp.put((byte) connectionContext.domainNameLength);
+                                tmp.put(connectionContext.address.getAddress());
+                                address = tmp.array();
+                            } else {
+                                address = connectionContext.address.getAddress();
+                            }
+
+                            byte[] port = {((byte) (connectionContext.port >> 8)), ((byte) connectionContext.port)};
+                            ByteBuffer connectionMessageReply = ByteBuffer.allocate(6 + address.length);
+                            connectionMessageReply.put(new byte[]{5, 0, 0});
+                            connectionMessageReply.put((byte) addressType);
+                            connectionMessageReply.put(address);
+                            connectionMessageReply.put(port);
+
+                            ConnectionContext peerConnectionContext = (ConnectionContext) connectionContext.peer.attachment();
+                            connectionContext.out = peerConnectionContext.in;
+                            connectionContext.in = peerConnectionContext.out;
+
+                            peerConnectionContext.out.clear();
+                            peerConnectionContext.out.put(connectionMessageReply.array());
+
+                            connectionContext.state = State.CONNECTED;
+                            peerConnectionContext.state = State.CONNECTED;
+
+                            key.interestOps(0);
+                            connectionContext.peer.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+
+                            logger.info("Connected successfully");
                         }
-                    }
-
-                    else if (key.isConnectable()) {
-                        logger.info("Trying to connect");
-                        SocketChannel channel = ((SocketChannel) key.channel());
-                        ConnectionContext connectionContext = ((ConnectionContext) key.attachment());
-
-                        if (!channel.finishConnect()) {
-                            throw new FailedConnectionException("Error at 'finishConnect'");
-                        }
-
-                        int addressType = connectionContext.addressType;
-                        byte[] address;
-                        if (addressType == AddressType.DomainName.getAddressType()) {
-                            ByteBuffer tmp = ByteBuffer.allocate(connectionContext.domainNameLength + 1);
-                            tmp.put((byte) connectionContext.domainNameLength);
-                            tmp.put(connectionContext.address.getAddress());
-                            address = tmp.array();
-                        }
-                        else {
-                            address = connectionContext.address.getAddress();
-                        }
-
-                        byte[] port = {((byte) (connectionContext.port >> 8)), ((byte) connectionContext.port)};
-                        ByteBuffer connectionMessageReply = ByteBuffer.allocate(3 + 1 +  address.length + 2);
-                        connectionMessageReply.put(new byte[] {5, 0, 0});
-                        connectionMessageReply.put((byte) addressType);
-//                        byte[] newAddress = ((InetSocketAddress) channel.getRemoteAddress()).getAddress().getAddress();
-//                        int tmp = ((InetSocketAddress) channel.getRemoteAddress()).getPort();
-//                        byte[] newPort = {((byte) (tmp >> 8)), ((byte) tmp)};
-                        connectionMessageReply.put(address);
-                        connectionMessageReply.put(port);
-
-                        ConnectionContext peerConnectionContext = (ConnectionContext) connectionContext.peer.attachment();
-                        connectionContext.out = peerConnectionContext.in;
-                        connectionContext.in = peerConnectionContext.out;
-
-                        peerConnectionContext.out.clear();
-                        peerConnectionContext.out.put(connectionMessageReply.array());
-                        logger.info("The connection message-reply is :: " + Arrays.toString(connectionMessageReply.array()));
-
-
-                        connectionContext.state = State.CONNECTED;
-                        peerConnectionContext.state = State.CONNECTED;
-
-                        key.interestOps(0);
-                        connectionContext.peer.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE);
-
-                        logger.info("Connected successfully");
                     }
                 }
+            } catch (IOException e) {
+                logger.log(Level.WARNING, "IOException at select :: " + e.getMessage());
+            } catch (BadRequestException | UnsupportedAuthenticationCodeException | UnsupportedCommandCodeException |
+                     WrongProtocolVersion | FailedConnectionException e) {
+                logger.info(e.getMessage());
+            } finally {
+                try {
+                    closeKey(key);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
-        } catch (IOException e) {
-            logger.log(Level.WARNING, "IOException at select :: " + e.getMessage());
-        } catch (BadRequestException | UnsupportedAuthenticationCodeException | UnsupportedCommandCodeException  | WrongProtocolVersion | FailedConnectionException e) {
-            logger.info(e.getMessage());
         }
     }
 
     void processGreetingMessage(SelectionKey key, ConnectionContext connectionContext) throws IOException, BadRequestException, WrongProtocolVersion, UnsupportedAuthenticationCodeException {
         byte[] GREETING_REPLY = new byte[] {5, 0};
         byte[] greetingMessageFromClient = connectionContext.in.array();
-        //logger.info("Got greeting message :: " + Arrays.toString(greetingMessageFromClient));
 
         if (greetingMessageFromClient[0] != SOCKS_VERSION) {
             logger.log(Level.SEVERE, "Got wrong protocol version");
             closeKey(key);
             throw new WrongProtocolVersion("Wrong protocol version");
         }
-        // we do not need to realize an authentication in this lab
         else if (greetingMessageFromClient[2] != AUTH_TYPE) {
             logger.log(Level.SEVERE, "Got unsupported authentication code");
             closeKey(key);
@@ -256,9 +243,8 @@ public class Proxy implements Runnable {
         }
     }
 
-    void processConnectionMessage(SelectionKey key, ConnectionContext connectionContext) throws IOException, BadRequestException, WrongProtocolVersion, UnsupportedCommandCodeException, FailedConnectionException {
+    void processConnectionMessage(SelectionKey key, ConnectionContext connectionContext) throws BadRequestException, WrongProtocolVersion, UnsupportedCommandCodeException, FailedConnectionException, IOException {
         byte[] connectionMessageFromClient = connectionContext.in.array();
-        //logger.info("Got connection message :: " + Arrays.toString(connectionMessageFromClient));
 
         int addressType = connectionMessageFromClient[3];
         int msgSize = 6;
@@ -328,8 +314,10 @@ public class Proxy implements Runnable {
             SocketChannel peer = SocketChannel.open();
             peer.configureBlocking(false);
             SelectionKey peerKey = peer.register(key.selector(), SelectionKey.OP_CONNECT);
-            if (peer.connect(new InetSocketAddress(address, port))) {
-                logger.info("immediately connected");
+            try {
+                peer.connect(new InetSocketAddress(address, port));
+            } catch (IOException e) {
+                closeKey(key);
             }
             ConnectionContext peerConnectionContext = new ConnectionContext();
             peerConnectionContext.peer = key;
