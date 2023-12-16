@@ -10,7 +10,6 @@ import ru.nsu.vinter.lab3.async.opentripmap.PlaceDescription;
 import ru.nsu.vinter.lab3.async.openweather.OpenWeatherResponse;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.concurrent.CompletableFuture;

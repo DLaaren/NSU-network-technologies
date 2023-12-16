@@ -44,7 +44,7 @@ public class ClientRequestHandler implements Runnable{
             }
             String fileName = clientReader.readUTF();
             long fileSize = clientReader.readLong();
-            if (fileName.contains("../") || fileName.equals("..")) {
+            if (fileName.contains("../") || fileName.equals("..") || fileName.contains("./..")) {
                 throw new SecurityException("File name contains \"../\" or \"..\"");
             }
             if (fileName.length() > MAX_FILENAME_LENGTH) {
