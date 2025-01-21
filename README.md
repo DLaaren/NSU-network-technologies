@@ -1,3 +1,5 @@
-# network-technologies
+# NSU-network-technologies
 
-||Packet Tracer||
+2-3 курс
+
+Семенерист = Андреев 
